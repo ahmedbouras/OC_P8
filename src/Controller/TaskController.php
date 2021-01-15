@@ -20,12 +20,14 @@ class TaskController extends AbstractController
     }
 
     /**
-     * @Route("/tasks", name="task_list")
+     * @Route("/tasks/{done?}", name="task_list")
      */
-    public function listAction(TaskRepository $taskRepository)
+    public function listAction(TaskRepository $taskRepository, $done)
     {
+        $tasks = ($done) ? $taskRepository->findBy(['is_done' => true]) : $taskRepository->findBy(['is_done' => false]);
+
         return $this->render('task/list.html.twig', [
-            'tasks' => $taskRepository->findAll()
+            'tasks' => $tasks
         ]);
     }
 
