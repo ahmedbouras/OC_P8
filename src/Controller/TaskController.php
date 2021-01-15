@@ -20,10 +20,11 @@ class TaskController extends AbstractController
     }
 
     /**
-     * @Route("/tasks/{done?}", name="task_list")
+     * @Route("/tasks", name="task_list")
      */
-    public function listAction(TaskRepository $taskRepository, $done)
+    public function listAction(TaskRepository $taskRepository, Request $request)
     {
+        $done = $request->attributes->get('done');
         $tasks = ($done) ? $taskRepository->findBy(['is_done' => true]) : $taskRepository->findBy(['is_done' => false]);
 
         return $this->render('task/list.html.twig', [
@@ -47,7 +48,9 @@ class TaskController extends AbstractController
 
             $this->addFlash('success', 'La tâche a été bien été ajoutée.');
 
-            return $this->redirectToRoute('task_list');
+            return $this->redirectToRoute('task_list', [
+                'done' => false,
+            ]);
         }
 
         return $this->render('task/create.html.twig', [
@@ -70,7 +73,9 @@ class TaskController extends AbstractController
 
             $this->addFlash('success', 'La tâche a bien été modifiée.');
 
-            return $this->redirectToRoute('task_list');
+            return $this->redirectToRoute('task_list', [
+                'done' => false,
+            ]);
         }
 
         return $this->render('task/edit.html.twig', [
@@ -84,13 +89,17 @@ class TaskController extends AbstractController
      */
     public function toggleTaskAction(Task $task)
     {
-        $task->setIsDone(true);
+        $task->toggle(!$task->getIsDone());
         $this->em->persist($task);
         $this->em->flush();
 
-        $this->addFlash('success', sprintf('La tâche - %s - a bien été marquée comme faite.', $task->getTitle()));
+        $state = ($task->getIsDone()) ? 'faite' : 'non terminée';
 
-        return $this->redirectToRoute('task_list');
+        $this->addFlash('success', sprintf('La tâche - %s - a bien été marquée comme %s.', $task->getTitle(), $state));
+
+        return $this->redirectToRoute('task_list', [
+            'done' => false,
+        ]);
     }
 
     /**
