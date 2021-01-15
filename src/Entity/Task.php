@@ -6,14 +6,13 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * @ORM\Entity
- * @ORM\Table
+ * @ORM\Entity(repositoryClass="App\Repository\TaskRepository")
  */
 class Task
 {
     /**
-     * @ORM\Column(type="integer")
      * @ORM\Id
+     * @ORM\Column(type="integer")
      * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
@@ -24,7 +23,7 @@ class Task
     private $createdAt;
 
     /**
-     * @ORM\Column(type="string")
+     * @ORM\Column(type="string", Length=255)
      * @Assert\NotBlank(message="Vous devez saisir un titre.")
      */
     private $title;
@@ -81,13 +80,20 @@ class Task
         $this->content = $content;
     }
 
-    public function isDone()
+    public function toggle($flag)
+    {
+        $this->isDone = $flag;
+    }
+
+    public function getIsDone(): ?bool
     {
         return $this->isDone;
     }
 
-    public function toggle($flag)
+    public function setIsDone(bool $isDone): self
     {
-        $this->isDone = $flag;
+        $this->isDone = $isDone;
+
+        return $this;
     }
 }
