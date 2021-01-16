@@ -20,11 +20,10 @@ class TaskController extends AbstractController
     }
 
     /**
-     * @Route("/tasks", name="task_list")
+     * @Route("/tasks/{done?}", name="task_list", requirements={"done"="\d+"})
      */
-    public function listAction(TaskRepository $taskRepository, Request $request)
+    public function listAction(TaskRepository $taskRepository, $done)
     {
-        $done = $request->attributes->get('done');
         $tasks = ($done) ? $taskRepository->findBy(['isDone' => true]) : $taskRepository->findBy(['isDone' => false]);
 
         return $this->render('task/list.html.twig', [
@@ -95,7 +94,11 @@ class TaskController extends AbstractController
 
         $state = ($task->getIsDone()) ? 'faite' : 'non terminée';
 
-        $this->addFlash('success', sprintf('La tâche - %s - a bien été marquée comme %s.', $task->getTitle(), $state));
+        $this->addFlash('success', sprintf(
+            'La tâche \' %s \' a bien été marquée comme %s.', 
+            $task->getTitle(),
+            $state
+        ));
 
         return $this->redirectToRoute('task_list', [
             'done' => false,

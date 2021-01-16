@@ -22,11 +22,11 @@ class AppFixtures extends Fixture
         $faker = \Faker\Factory::create();
         for ($i = 0; $i < 5; $i++) { 
             $user = new User();
-            $password = $this->encoder->encodePassword($user, 'pass_' . $i);
+            $password = $this->encoder->encodePassword($user, 'password');
 
-            $user->setUsername('user_' . $i)
+            $user->setUsername('user' . $i)
                  ->setPassword($password)
-                 ->setEmail('user_' . $i . '@mail.fr');
+                 ->setEmail('user' . $i . '@mail.fr');
 
             $manager->persist($user);
 
