@@ -13,10 +13,10 @@
         {% endif %}
 
         <label for="inputUsername">Nom d'utilisateur :</label>
-        <input type="text" id="inputUsername" name="username" value="{{ last_username }}" />
+        <input type="text" id="inputUsername" name="username" value="{{ last_username }}" required />
 
         <label for="inputPassword">Mot de passe :</label>
-        <input type="password" id="inputPassword" name="password" />
+        <input type="password" id="inputPassword" name="password" required />
 
         <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
 
