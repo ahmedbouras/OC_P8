@@ -11,7 +11,7 @@
     <div class="row">
         <p class="col-12">Auteur : 
             {% if task.user is not null %}
-                {{ task.user }}
+                {{ task.user.username }}
             {% else %}
                 Anonyme
             {% endif %}
