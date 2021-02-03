@@ -5,6 +5,9 @@ namespace App\DataFixtures;
 use App\Entity\User;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
+/**
+ * @codeCoverageIgnore
+ */
 trait UserFixtures
 {
     private $encoder;

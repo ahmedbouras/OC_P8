@@ -31,4 +31,36 @@ class SecurityControllerTest extends WebTestCase
 
         $this->assertResponseStatusCodeSame(302);
     }
+
+    public function testLoginWithBadCredentials()
+    {
+        $client = static::createClient();
+        $crawler = $client->request('GET', '/login');
+
+        $form = $crawler->selectButton('Se connecter')->form([
+            'username'    => 'fakeUsername',
+            'password' => 'fakePassword',
+        ]);
+        $client->submit($form);
+
+        $client->followRedirect();
+
+        $this->assertSelectorTextContains('.alert-danger', 'Utilisateur introuvable.');
+    }
+
+    public function testLoginWithBadPassword()
+    {
+        $client = static::createClient();
+        $crawler = $client->request('GET', '/login');
+
+        $form = $crawler->selectButton('Se connecter')->form([
+            'username'    => 'admin',
+            'password' => 'fakePassword',
+        ]);
+        $client->submit($form);
+
+        $client->followRedirect();
+
+        $this->assertSelectorTextContains('.alert-danger', 'Mot de passe incorrect.');
+    }
 }
