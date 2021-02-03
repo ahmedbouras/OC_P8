@@ -22,7 +22,6 @@ class TaskType extends AbstractType
                 'required' => true,
                 'label' => 'Contenu',
             ])
-            //->add('author') ===> must be the user authenticated
         ;
     }
 

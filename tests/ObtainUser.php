@@ -12,4 +12,13 @@ trait ObtainUser
         $em = $kernel->getContainer()->get('doctrine')->getManager();
         return $em->getRepository(User::class)->findOneBy($criteria);
     }
+
+    public function obtainNewUser()
+    {
+        $user = new User();
+        $user->setUsername('john')
+             ->setPassword('johnpassword')
+             ->setEmail('jdoe@mail.fr');
+        return $user;
+    }
 }

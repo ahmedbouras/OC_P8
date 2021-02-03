@@ -11,7 +11,8 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
- * @UniqueEntity("username")
+ * @UniqueEntity("username", message="Ce nom d'utilisateur est déjà utilisé.")
+ * @UniqueEntity("email", message="Cet email est déjà utilisé.")
  */
 class User implements UserInterface
 {
@@ -128,6 +129,9 @@ class User implements UserInterface
         return $this;
     }
 
+    /**
+     * @codeCoverageIgnore
+     */
     public function eraseCredentials()
     {
     }
