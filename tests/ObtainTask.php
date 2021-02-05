@@ -17,7 +17,9 @@ trait ObtainTask
     {
         $task = new Task();
         $task->setTitle('Ma tâche')
-             ->setContent('Mon contenu de test.');
+             ->setContent('Mon contenu de test.')
+             ->setIsDone(0)
+             ->setCreatedAt(new \DateTime());
         return $task;
     }
 }
