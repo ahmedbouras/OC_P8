@@ -5,6 +5,9 @@ namespace App\DataFixtures;
 use App\Entity\Task;
 use App\Entity\User;
 
+/**
+ * @codeCoverageIgnore
+ */
 trait TaskFixtures
 {
     public function createTask($faker, User $author, int $iterable)
