@@ -64,7 +64,7 @@ class UserController extends AbstractController
     }
 
     /**
-     * @Route("/users/{id}/edit", name="user_edit")
+     * @Route("/users/{id}/edit", name="user_edit", requirements={"id"="\d+"})
      */
     public function editAction(User $user, Request $request)
     {
@@ -92,5 +92,22 @@ class UserController extends AbstractController
             'form' => $form->createView(),
             'user' => $user
         ]);
+    }
+
+    /**
+     * @Route("/users/{id}/delete", name="user_delete", requirements={"id"="\d+"})
+     */
+    public function deleteAction(User $user)
+    {
+        try {
+            $this->em->remove($user);
+            $this->em->flush();
+
+            $this->addFlash('success', "L'utilisateur a bien été supprimée.");
+        } catch (\Exception $e) {
+            $this->addFlash('error', 'Erreur lors de la suppression : ' . $e->getMessage());
+        }
+
+        return $this->redirectToRoute('user_list');
     }
 }
