@@ -68,6 +68,16 @@ class TaskController extends AbstractController
      */
     public function editAction(Task $task, Request $request)
     {
+        $isAdmin = in_array('ROLE_ADMIN', $this->getUser()->getRoles()) ?? false;
+
+        if ($task->getUser() !== $this->getUser() && !$isAdmin) {
+            $this->addFlash('error', 'Vous ne pouvez pas modifier cette tâche.');
+
+            return $this->redirectToRoute('task_list', [
+                'done' => $task->getIsDone(),
+            ]);
+        }
+
         $form = $this->createForm(TaskType::class, $task);
 
         $form->handleRequest($request);
@@ -79,7 +89,7 @@ class TaskController extends AbstractController
             $this->addFlash('success', 'La tâche a bien été modifiée.');
 
             return $this->redirectToRoute('task_list', [
-                'done' => false,
+                'done' => $task->getIsDone(),
             ]);
         }
 
