@@ -5,10 +5,12 @@ namespace App\Controller;
 use App\Entity\Task;
 use App\Form\TaskType;
 use App\Repository\TaskRepository;
+use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class TaskController extends AbstractController
 {
@@ -33,19 +35,18 @@ class TaskController extends AbstractController
 
     /**
      * @Route("/tasks/create", name="task_create")
+     * @IsGranted("ROLE_USER")
      */
-    public function createAction(Request $request)
+    public function createAction(Request $request, UserRepository $userRepository)
     {
         $task = new Task();
-        $user = $this->getUser() ?? false;
+        $user = $this->getUser() ?? $userRepository->findOneBy(['username' => 'anonym']);
         $form = $this->createForm(TaskType::class, $task);
 
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            if ($user) {
-                $task->setUser($user);
-            }
+            $task->setUser($user);
             $this->em->persist($task);
             $this->em->flush();
 
@@ -63,6 +64,7 @@ class TaskController extends AbstractController
 
     /**
      * @Route("/tasks/{id}/edit", name="task_edit", requirements={"id"="\d+"})
+     * @IsGranted("ROLE_USER")
      */
     public function editAction(Task $task, Request $request)
     {
@@ -89,6 +91,7 @@ class TaskController extends AbstractController
 
     /**
      * @Route("/tasks/{id}/toggle", name="task_toggle", requirements={"id"="\d+"})
+     * @IsGranted("ROLE_USER")
      */
     public function toggleTaskAction(Task $task)
     {
@@ -111,14 +114,13 @@ class TaskController extends AbstractController
 
     /**
      * @Route("/tasks/{id}/delete", name="task_delete", requirements={"id"="\d+"})
+     * @IsGranted("ROLE_USER")
      */
     public function deleteTaskAction(Task $task)
     {
-        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
-
         $isAdmin = in_array('ROLE_ADMIN', $this->getUser()->getRoles()) ?? false;
 
-        if ($task->getUser() === $this->getUser() || ($task->getUser() === null && $isAdmin)) {
+        if ($task->getUser() === $this->getUser() || $isAdmin) {
             $this->em->remove($task);
             $this->em->flush();
 

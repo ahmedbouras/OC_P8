@@ -2,43 +2,26 @@
 
 namespace App\DataFixtures;
 
-use App\Entity\Task;
-use App\Entity\User;
 use Doctrine\Persistence\ObjectManager;
 use Doctrine\Bundle\FixturesBundle\Fixture;
-use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 class AppFixtures extends Fixture
 {
-    private $encoder;
-
-    public function __construct(UserPasswordEncoderInterface $encoder)
-    {
-        $this->encoder = $encoder;
-    }
+    use UserFixtures;
+    use TaskFixtures;
     
     public function load(ObjectManager $manager)
     {
         $faker = \Faker\Factory::create();
-        for ($i = 0; $i < 5; $i++) { 
-            $user = new User();
-            $password = $this->encoder->encodePassword($user, 'password');
-
-            $user->setUsername('user' . $i)
-                 ->setPassword($password)
-                 ->setEmail('user' . $i . '@mail.fr');
-
-            $manager->persist($user);
+        for ($i = 0; $i < 5; $i++) {
+            $author = $this->createAuthor($i);
+            $manager->persist($author);
 
             for ($j = 0; $j < 2; $j++) {
-                $task = new Task();
-                $task->setTitle($faker->word())
-                     ->setContent($faker->paragraph());
-
+                $task = $this->createTask($faker, $author, $j);
                 $manager->persist($task);
             }
         }
-
         $manager->flush();
     }
 }

@@ -9,12 +9,6 @@
         {{ form_end(form) }}
     </div>
     <div class="row">
-        <p class="col-12">Auteur : 
-            {% if task.user is not null %}
-                {{ task.user.username }}
-            {% else %}
-                Anonyme
-            {% endif %}
-        </p>
+        <p class="col-12">Auteur : {{ task.user.username }}</p>
     </div>
 {% endblock %}
