@@ -22,6 +22,9 @@ class TaskController extends AbstractController
     }
 
     /**
+     * Liste les tâches terminées ou non terminées en fonction du paramètres $done
+     * @param true|null $done
+     * 
      * @Route("/tasks/{done?}", name="task_list", requirements={"done"="\d+"})
      */
     public function listAction(TaskRepository $taskRepository, $done)
@@ -34,6 +37,8 @@ class TaskController extends AbstractController
     }
 
     /**
+     * Permet de créer une tâche à l'aide d'un formulaire
+     *  
      * @Route("/tasks/create", name="task_create")
      * @IsGranted("ROLE_USER")
      */
@@ -63,6 +68,8 @@ class TaskController extends AbstractController
     }
 
     /**
+     * Permet de modifier une tâche à l'aide d'un formulaire
+     * 
      * @Route("/tasks/{id}/edit", name="task_edit", requirements={"id"="\d+"})
      * @IsGranted("ROLE_USER")
      */
@@ -100,6 +107,8 @@ class TaskController extends AbstractController
     }
 
     /**
+     * Permet de changer le statut du tâche (à faire ou terminées) 
+     * 
      * @Route("/tasks/{id}/toggle", name="task_toggle", requirements={"id"="\d+"})
      * @IsGranted("ROLE_USER")
      */
@@ -123,6 +132,8 @@ class TaskController extends AbstractController
     }
 
     /**
+     * Supprime une tâche à condition d'être le propriétaire de celle-ci ou d'être administrateur
+     * 
      * @Route("/tasks/{id}/delete", name="task_delete", requirements={"id"="\d+"})
      * @IsGranted("ROLE_USER")
      */
