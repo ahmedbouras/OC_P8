@@ -43,7 +43,6 @@ class UserController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            // TODO: refactoring to avoid duplication
             $user->setPassword(
                 $this->passwordEncoder->encodePassword(
                     $user,
@@ -74,7 +73,6 @@ class UserController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            // TODO: refactoring to avoid duplication
             $user->setPassword(
                 $this->passwordEncoder->encodePassword(
                     $user,
