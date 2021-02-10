@@ -1,14 +1,14 @@
 security:
     # https://symfony.com/doc/current/security.html#where-do-users-come-from-user-providers
-    providers:
-        app_user_provider:
-            entity:
-                class: App\Entity\User
-                property: username
-    
     encoders:
         App\Entity\User:
             algorithm: auto
+            
+    providers:
+        users:
+            entity:
+                class: App\Entity\User
+                property: username
 
     firewalls:
         dev:
@@ -16,6 +16,7 @@ security:
             security: false
         main:
             anonymous: lazy
+            provider: users
             guard:
                 authenticators:
                     - App\Security\LoginFormAuthenticator
