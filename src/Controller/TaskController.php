@@ -5,7 +5,7 @@ namespace App\Controller;
 use App\Entity\Task;
 use App\Form\TaskType;
 use App\Repository\TaskRepository;
-use App\Repository\UserRepository;
+use App\Services\UserRoles;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
@@ -14,6 +14,8 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class TaskController extends AbstractController
 {
+    use UserRoles;
+
     private $em;
 
     public function __construct(EntityManagerInterface $em)
@@ -42,16 +44,15 @@ class TaskController extends AbstractController
      * @Route("/tasks/create", name="task_create")
      * @IsGranted("ROLE_USER")
      */
-    public function createAction(Request $request, UserRepository $userRepository)
+    public function createAction(Request $request)
     {
         $task = new Task();
-        $user = $this->getUser() ?? $userRepository->findOneBy(['username' => 'anonym']);
         $form = $this->createForm(TaskType::class, $task);
 
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $task->setUser($user);
+            $task->setUser($this->getUser());
             $this->em->persist($task);
             $this->em->flush();
 
@@ -75,9 +76,7 @@ class TaskController extends AbstractController
      */
     public function editAction(Task $task, Request $request)
     {
-        $isAdmin = in_array('ROLE_ADMIN', $this->getUser()->getRoles()) ?? false;
-
-        if ($task->getUser() !== $this->getUser() && !$isAdmin) {
+        if ($task->getUser() !== $this->getUser() && !$this->isAdmin($this->getUser())) {
             $this->addFlash('error', 'Vous ne pouvez pas modifier cette tâche.');
 
             return $this->redirectToRoute('task_list', [
@@ -139,9 +138,7 @@ class TaskController extends AbstractController
      */
     public function deleteTaskAction(Task $task)
     {
-        $isAdmin = in_array('ROLE_ADMIN', $this->getUser()->getRoles()) ?? false;
-
-        if ($task->getUser() === $this->getUser() || $isAdmin) {
+        if ($task->getUser() === $this->getUser() || $this->isAdmin($this->getUser())) {
             $this->em->remove($task);
             $this->em->flush();
 
