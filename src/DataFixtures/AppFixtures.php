@@ -5,9 +5,6 @@ namespace App\DataFixtures;
 use Doctrine\Persistence\ObjectManager;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 
-/**
- * @codeCoverageIgnore
- */
 class AppFixtures extends Fixture
 {
     use UserFixtures;

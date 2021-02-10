@@ -104,7 +104,7 @@ class TaskControllerTest extends WebTestCase
         
         $kernel = self::bootKernel();
         $user = $this->obtainUser($kernel, ['email' => 'user2@mail.fr']);
-        $task = $this->obtainTask($kernel, ['user' => $user]);
+        $task = $this->obtainTask($kernel, ['user' => $user, 'title' => 'Test']);
 
         $client = $this->logIn($client, $kernel, $user);
         $crawler = $client->request('GET', sprintf('/tasks/%s/edit', $task->getId()));
@@ -124,7 +124,7 @@ class TaskControllerTest extends WebTestCase
         
         $kernel = self::bootKernel();
         $user = $this->obtainUser($kernel, ['email' => 'user2@mail.fr']);
-        $task = $this->obtainTask($kernel, ['user' => $user]);
+        $task = $this->obtainTask($kernel, ['user' => $user, 'title' => 'Modification']);
 
         $client = $this->logIn($client, $kernel, $user);
         $client->request('GET', sprintf('/tasks/%s/toggle', $task->getId()));
@@ -154,7 +154,7 @@ class TaskControllerTest extends WebTestCase
         
         $kernel = self::bootKernel();
         $user = $this->obtainUser($kernel, ['email' => 'user2@mail.fr']);
-        $task = $this->obtainTask($kernel, ['user' => $user]);
+        $task = $this->obtainTask($kernel, ['user' => $user, 'title' => 'Modification']);
 
         $client = $this->logIn($client, $kernel, $user);
         $client->request('GET', sprintf('/tasks/%s/delete', $task->getId()));

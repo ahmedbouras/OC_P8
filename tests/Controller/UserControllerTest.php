@@ -159,4 +159,21 @@ class UserControllerTest extends WebTestCase
 
         $this->assertResponseRedirects('/users');
     }
+
+    public function testDeleteUser()
+    {
+        $client = static::createClient();
+
+        $kernel = self::bootKernel();
+        $admin = $this->obtainUser($kernel, ['email' => 'admin@mail.fr']);
+        $user = $this->obtainUser($kernel, ['email' => 'userTest@mail.fr']);
+        $this->logIn($client, $kernel, $admin);
+
+        $client->request('GET', sprintf('/users/%s/delete', $user->getId()));
+        
+        $this->assertResponseRedirects('/users');
+
+        $client->followRedirect();
+        $this->assertSelectorExists('.alert-success');
+    }
 }

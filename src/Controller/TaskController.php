@@ -5,7 +5,7 @@ namespace App\Controller;
 use App\Entity\Task;
 use App\Form\TaskType;
 use App\Repository\TaskRepository;
-use App\Repository\UserRepository;
+use App\Services\UserRoles;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
@@ -14,6 +14,8 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class TaskController extends AbstractController
 {
+    use UserRoles;
+
     private $em;
 
     public function __construct(EntityManagerInterface $em)
@@ -22,6 +24,9 @@ class TaskController extends AbstractController
     }
 
     /**
+     * Liste les tâches terminées ou non terminées en fonction du paramètres $done
+     * @param true|null $done
+     * 
      * @Route("/tasks/{done?}", name="task_list", requirements={"done"="\d+"})
      */
     public function listAction(TaskRepository $taskRepository, $done)
@@ -34,19 +39,20 @@ class TaskController extends AbstractController
     }
 
     /**
+     * Permet de créer une tâche à l'aide d'un formulaire
+     *  
      * @Route("/tasks/create", name="task_create")
      * @IsGranted("ROLE_USER")
      */
-    public function createAction(Request $request, UserRepository $userRepository)
+    public function createAction(Request $request)
     {
         $task = new Task();
-        $user = $this->getUser() ?? $userRepository->findOneBy(['username' => 'anonym']);
         $form = $this->createForm(TaskType::class, $task);
 
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $task->setUser($user);
+            $task->setUser($this->getUser());
             $this->em->persist($task);
             $this->em->flush();
 
@@ -63,14 +69,14 @@ class TaskController extends AbstractController
     }
 
     /**
+     * Permet de modifier une tâche à l'aide d'un formulaire
+     * 
      * @Route("/tasks/{id}/edit", name="task_edit", requirements={"id"="\d+"})
      * @IsGranted("ROLE_USER")
      */
     public function editAction(Task $task, Request $request)
     {
-        $isAdmin = in_array('ROLE_ADMIN', $this->getUser()->getRoles()) ?? false;
-
-        if ($task->getUser() !== $this->getUser() && !$isAdmin) {
+        if ($task->getUser() !== $this->getUser() && !$this->isAdmin($this->getUser())) {
             $this->addFlash('error', 'Vous ne pouvez pas modifier cette tâche.');
 
             return $this->redirectToRoute('task_list', [
@@ -100,6 +106,8 @@ class TaskController extends AbstractController
     }
 
     /**
+     * Permet de changer le statut du tâche (à faire ou terminées) 
+     * 
      * @Route("/tasks/{id}/toggle", name="task_toggle", requirements={"id"="\d+"})
      * @IsGranted("ROLE_USER")
      */
@@ -123,14 +131,14 @@ class TaskController extends AbstractController
     }
 
     /**
+     * Supprime une tâche à condition d'être le propriétaire de celle-ci ou d'être administrateur
+     * 
      * @Route("/tasks/{id}/delete", name="task_delete", requirements={"id"="\d+"})
      * @IsGranted("ROLE_USER")
      */
     public function deleteTaskAction(Task $task)
     {
-        $isAdmin = in_array('ROLE_ADMIN', $this->getUser()->getRoles()) ?? false;
-
-        if ($task->getUser() === $this->getUser() || $isAdmin) {
+        if ($task->getUser() === $this->getUser() || $this->isAdmin($this->getUser())) {
             $this->em->remove($task);
             $this->em->flush();
 

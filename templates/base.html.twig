@@ -41,6 +41,9 @@
                 <a href="{{ path('user_create') }}" class="btn btn-primary">Créer un utilisateur</a>
 
                 {% if app.user %}
+                    {% if 'ROLE_ADMIN' in app.user.roles %}
+                    <a href="{{ path('user_list') }}" class="btn btn-success">Liste des utilisateur</a>
+                    {% endif %}
                 <a href="{{ path('logout') }}" class="pull-right btn btn-danger">Se déconnecter</a>
                 {% endif %}
 
